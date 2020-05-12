@@ -32,7 +32,7 @@ class Graph:
         
         if node in self.vertices:
             
-            return self.vertices[node].downstream | self.vertices[node].upstream
+            return self.vertices[node].downstream # | self.vertices[node].upstream
 
     def bft(self, node):
         
@@ -48,9 +48,11 @@ class Graph:
                 visited.add(n)
                 print(n)
                 
-                for path in self.vertices[n].downstream | self.vertices[n].upstream:
+                for path in self.vertices[n].downstream: # | self.vertices[n].upstream:
 
                     q.enqueue(path)
+                    
+        return n
 
     def dft(self, node):
 
@@ -66,7 +68,7 @@ class Graph:
                 visited.add(n)
                 print(n)
                 
-                for path in self.vertices[n].downstream | self.vertices[n].upstream:
+                for path in self.vertices[n].downstream: # | self.vertices[n].upstream:
 
                     s.push(path)
     
@@ -75,7 +77,7 @@ class Graph:
         print(node)
         visited.add(node)
         
-        for path in self.vertices[node].downstream | self.vertices[node].upstream:
+        for path in self.vertices[node].downstream: # | self.vertices[node].upstream:
             
             if path not in visited:
 
@@ -99,7 +101,7 @@ class Graph:
             
             n = q.dequeue()
             
-            if target in self.vertices[n].downstream | self.vertices[n].upstream:
+            if target in self.vertices[n].downstream: # | self.vertices[n].upstream:
                 
                 chain.append(n)
                 return self.bfs(node, chain[-1], chain)
@@ -108,7 +110,7 @@ class Graph:
                 
                 visited.add(n)
                 
-                for path in self.vertices[n].downstream | self.vertices[n].upstream:
+                for path in self.vertices[n].downstream: # | self.vertices[n].upstream:
 
                     q.enqueue(path)
 
@@ -118,47 +120,47 @@ class Graph:
             
             return [node]
         
-        c = [[node]]
+        stack = [[node]]
         visited = {node}
         d = 0
         
         while d > -1:
             
-            n = c[d][-1]
+            n = stack[d][-1]
             
-            if target in self.vertices[n].downstream | self.vertices[n].upstream:
+            if target in self.vertices[n].downstream: # | self.vertices[n].upstream:
                 
                 d += 1
-                c.append([target])
+                stack.append([target])
                 chain = [None] * (d + 1)
                 
                 for i in range(d + 1):
 
-                    chain[i] = c[i][-1]
+                    chain[i] = stack[i][-1]
                 
                 return chain
             
             flag = False
             d += 1
-            c.append([])
+            stack.append([])
             
-            for path in self.vertices[n].downstream | self.vertices[n].upstream:
+            for path in self.vertices[n].downstream: # | self.vertices[n].upstream:
 
                 if path not in visited:
 
-                    c[d].append(path)
+                    stack[d].append(path)
                     visited.add(path)
                     flag = True
             
             if flag == False:
                 
-                c.pop()
+                stack.pop()
                 d -= 1
-                c[d].pop()
+                stack[d].pop()
                 
-                if c[d] == []:
+                if stack[d] == []:
 
-                    c.pop()
+                    stack.pop()
                     d -= 1
 
     def dfs_recursive(self, node, target, chain = [], visited = set()):
@@ -170,7 +172,7 @@ class Graph:
             
             return chain
         
-        for path in self.vertices[node].downstream | self.vertices[node].upstream:
+        for path in self.vertices[node].downstream: # | self.vertices[node].upstream:
             
             if path not in visited:
 
