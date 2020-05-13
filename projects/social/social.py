@@ -1,36 +1,40 @@
 
 import numpy as np
-import sys
-sys.path.insert(0, '..\graph')
-from graph import Graph, Gnode
+
 
 class User:
+    
     def __init__(self, name):
+        
         self.name = name
+        
 
 class SocialGraph:
+    
     def __init__(self):
+        
         self.last_id = 0
         self.users = {}
         self.friendships = {}
 
     def add_friendship(self, user_id, friend_id):
-        """
-        Creates a bi-directional friendship
-        """
+
         if user_id == friend_id:
+            
             print("WARNING: You cannot be friends with yourself")
+            
         elif friend_id in self.friendships[user_id] or user_id in self.friendships[friend_id]:
+            
             print("WARNING: Friendship already exists")
+            
         else:
+            
             self.friendships[user_id].add(friend_id)
-            self.friendships[friend_id].add(user_id)
+            self.friendships[friend_id].add(user_id)            
 
     def add_user(self, name):
-        """
-        Create a new user with a sequential integer ID
-        """
-        self.last_id += 1  # automatically increment the ID to assign the new user
+
+        self.last_id += 1
         self.users[self.last_id] = User(name)
         self.friendships[self.last_id] = set()
 
@@ -63,22 +67,46 @@ class SocialGraph:
             i += 1
 
     def get_all_social_paths(self, user_id):
-        """
-        Takes a user's user_id as an argument
-
-        Returns a dictionary containing every user in that user's
-        extended network with the shortest friendship path between them.
-
-        The key is the friend's ID and the value is the path.
-        """
-        visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
+        
+        visited = {user_id: [user_id]}
+        current = {user_id: sg.friendships[user_id]}
+        flag = True
+        
+        while flag:
+            
+            degree = {}
+            flag = False
+            
+            for friend in current:
+                
+                for path in current[friend]:
+                
+                    if path not in visited:
+                        
+                        visited[path] = visited[friend][:]
+                        visited[path].append(path)
+                        degree[path] = sg.friendships[path]
+                        flag = True
+            
+            current = degree
+        
+        visited.pop(user_id)
         return visited
-
+    
 
 if __name__ == '__main__':
+    
     sg = SocialGraph()
     sg.populate_graph(10, 2)
     print(sg.friendships)
     connections = sg.get_all_social_paths(1)
     print(connections)
+    
+    sg = SocialGraph()
+    sg.populate_graph(1000, 5)
+    connections = sg.get_all_social_paths(1)
+    print(f'percent of graph in network: {len(connections) / 9.99:.2f} %')
+    total = 0
+    for friend in connections:
+        total += len(connections[friend]) - 1
+    print(f'average degree of separation {total / len(connections):.2f}')
